@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "todo-fastapi"
+version = "0.1.0"
+description = ""
+authors = ["lotteAdmin <ms-kim1@lotte.net>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.111.1"
+sqlalchemy = "^2.0.31"
+alembic = "^1.13.2"
+uvicorn = "^0.30.3"
+pytest = "^8.3.1"
+python-dotenv = "^1.0.1"
+python-jose = "^3.3.0"
+psycopg2 = "^2.9.9"
+pyjwt = "^2.8.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
