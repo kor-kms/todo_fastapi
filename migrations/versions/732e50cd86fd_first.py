@@ -25,12 +25,20 @@ def upgrade() -> None:
         sa.Column('day_id', sa.Integer, primary_key=True)
     )
     op.create_table(
-       'TB_TODO',
-       sa.Column('todo_id', sa.Integer, primary_key=True),
-       sa.Column('context', sa.Text, nullable=False),
-       sa.Column('created_at', sa.DateTime, nullable=False),
-       sa.Column('modified_at', sa.DateTime, nullable=False)
-   )
+        'TB_TODO',
+        sa.Column('todo_id', sa.Integer, primary_key=True),
+        sa.Column('context', sa.Text, nullable=False),
+        sa.Column('created_at', sa.DateTime, nullable=False),
+        sa.Column('modified_at', sa.DateTime, nullable=False)
+    )
+    op.create_table(
+        'TB_USER',
+        sa.Column('user_id', sa.Integer, primary_key=True),
+        sa.Column('id', sa.Text, nullable=False),
+        sa.Column('pw', sa.Text, nullable=False),
+        sa.Column('created_at', sa.DateTime, nullable=False),
+        sa.Column('modified_at', sa.DateTime, nullable=False)
+    )
 
 
 def downgrade() -> None:
