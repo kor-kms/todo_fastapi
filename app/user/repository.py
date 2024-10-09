@@ -15,39 +15,13 @@ class BaseUserRepository(abc.ABC):
     async def findUser(self, id: str) -> str:
         raise NotImplementedError
 
-    @abc.abstractmethod
-    async def verifyPassword(self, id: str, pw: str) -> bool:
-        raise NotImplementedError
-
 
 class UserRepository(BaseUserRepository):
     async def findUser(self, id: str) -> str:
         result = (
-            (
-                await self.session.execute(
-                    select(tb.User.id)
-                    .filter(tb.User.id == id)
-                )
-            )
+            (await self.session.execute(select(tb.User).filter(tb.User.id == id)))
             .unique()
             .scalar_one_or_none()
         )
 
         return result
-
-    async def verifyPassword(self, id: str, pw: str) -> bool:
-        result = (
-            (
-                await self.session.execute(
-                    select(tb.User.pw)
-                    .filter(tb.User.id == id)
-                )
-            )
-            .unique()
-            .scalar_one()
-        )
-
-        if result == pw:
-            return True
-        else:
-            return False

@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["lotteAdmin <ms-kim1@lotte.net>"]
 readme = "README.md"
+include = ["app", "tests"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
