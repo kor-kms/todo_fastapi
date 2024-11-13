@@ -1,14 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Header, HTTPException, Response, status
 
 from app.depends.service import get_todo_service
-from app.todo.models import (
-    DeleteTodoCount,
-    DeleteTodoInfo,
-    GetMonthInfoList,
-    GetTodoInfo,
-    GetTodoInfoList,
-    InsertTodoInfo,
-)
+from app.todo.models import (DeleteTodoCount, DeleteTodoInfo, GetMonthInfoList,
+                             GetTodoInfo, GetTodoInfoList, InsertTodoInfo)
 from app.todo.service import BaseTodoService
 
 app_router = APIRouter()
@@ -24,11 +20,11 @@ async def getMonthInfo(
 
 @app_router.get("/todoinfo", response_model=GetTodoInfoList)
 async def getTodoInfo(
-    user_id: int, day_id: int, todo_svc: BaseTodoService = Depends(get_todo_service)
+    user_id: int, day_id: int, todo_svc: BaseTodoService = Depends(get_todo_service),
 ):
     todoinfo = await todo_svc.getTodoInfo(user_id, day_id)
     return GetTodoInfoList(data=todoinfo)
-
+# https://fastapi.tiangolo.com/tutorial/security/get-current-user/
 
 @app_router.post("/regtodo", response_model=InsertTodoInfo, status_code=201)
 async def insertTodo(
@@ -45,7 +41,11 @@ async def insertTodo(
 
 @app_router.post("/deltodo", response_model=DeleteTodoInfo)
 async def deleteTodo(
-    todo_id: int, day_id: int, todo_svc: BaseTodoService = Depends(get_todo_service)
+    todo_id: int, day_id: int, todo_svc: BaseTodoService = Depends(get_todo_service), user = Depends(get_current_user)
 ):
     deleteinfo = await todo_svc.deleteTodoInfo(todo_id, day_id)
     return DeleteTodoCount(data=deleteinfo)
+
+
+
+

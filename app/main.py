@@ -22,3 +22,8 @@ def get_application() -> FastAPI:
 
 
 app = get_application()
+
+# https://www.notion.so/FastAPI-Todo-Backend-API-414f4fb8de944e87aabe9e59abdc9ec6?pvs=4
+
+# 미들웨어 -> 모든 API에 공통으로 적용
+# JWT 토큰의 유효성 여부 -> 모든 API 공통으로 적용되어야 하는가?
