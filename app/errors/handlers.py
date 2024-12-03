@@ -1,29 +1,22 @@
-from typing import Union
-
 from fastapi import Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.openapi.constants import REF_PREFIX
-from fastapi.openapi.utils import validation_error_response_definition
 from fastapi.responses import JSONResponse
-from starlette.status import HTTP_404_NOT_FOUND
 
-from app.errors.excpetion import UserIdNotFoundError
+from app.errors.excpetion import NotFoundException
 
 
-async def http404_error_handler(
-    _: Request,
-    exc: RequestValidationError | UserIdNotFoundError,
-) -> JSONResponse:
+async def not_fount_exception_handler (request: Request, exc: NotFoundException):
     return JSONResponse(
-        {"errors": exc.errors()},
-        status_code=HTTP_404_NOT_FOUND,
+        status_code=404, content={"message": f"DATA NOT FOUND"}
     )
 
 
-validation_error_response_definition["properties"] = {
-    "errors": {
-        "title": "Errors",
-        "type": "array",
-        "items": {"$ref": "{0}ValidationError".format(REF_PREFIX)},
-    },
-}
+async def un_authorized_exception_handler (request: Request, exc: NotFoundException):
+    return JSONResponse(
+        status_code=401, content={"message": f"UNAUTHORIZED"}
+    )
+
+
+async def forbidden_exception_handler (request: Request, exc: NotFoundException):
+    return JSONResponse(
+        status_code=403, content={"message": f"FORBIDDEN"}
+    )

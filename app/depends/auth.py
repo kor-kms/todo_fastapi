@@ -1,25 +1,25 @@
 
-from fastapi.exceptions import HTTPException
+from typing import Union
+from datetime import datetime
+
+from app.errors.excpetion import ForbiddenException
+from fastapi import Header
+from cryptography.fernet import Fernet
+
+secret_key = Fernet.generate_key()
+cipher_suite = Fernet(secret_key)
+
+async def get_current_user(token: Union[str, None] = Header(default=None)):
+    try:
+        decrypted_token = cipher_suite.decrypt(token)
+    except:
+        raise ForbiddenException
+
+    user_id = decrypted_token.decode('utf-8').split('-')[0]
+    return int(user_id)
 
 
-async def current_user(Authorization: Annotated[str|None, Header()]):
-    token = Authorization
-    user = fake_decode_token(token)
-    return user
-
-
-
-# header parameter 가져오는 법
-# https://fastapi.tiangolo.com/tutorial/header-params/#automatic-conversion
-
-# cookie parameter 가져오는 법
-# https://fastapi.tiangolo.com/tutorial/cookie-params/
-
-# @app.get("/users/me")
-# async def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
-#     return current_user
-
-
-async def is_superuser(user=Depends(current_user)):
-    if not user.is_admin:
-        raise HTTPException(403)
+async def get_token(id: str):
+    token = bytes(f"{id}-Simple-token-{datetime.now()}", 'utf-8')
+    cipher_token = cipher_suite.encrypt(token)
+    return cipher_token

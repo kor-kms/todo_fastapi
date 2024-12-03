@@ -1,8 +1,13 @@
-class UserIdNotFoundError(Exception):
-    def __init__(self, *args):
-        super().__init__(*args, "User id not found")
+class NotFoundException(Exception):
+    def __init__(self):
+        pass
 
 
-class NotAuthenticated(Exception):
-    def __init__(self, *args):
-        super().__init__(*args, "User pw wrong")
+class UnAuthorizedException(Exception):
+    def __init__(self):
+        pass
+
+
+class ForbiddenException(Exception):
+    def __init__(self):
+        pass

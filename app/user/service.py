@@ -1,40 +1,38 @@
 import abc
-from datetime import datetime
-from typing import Tuple
 
-from app.errors.excpetion import NotAuthenticated, UserIdNotFoundError
-from app.user.models import Token, UserLoginResponse
+from app.errors.excpetion import UnAuthorizedException, NotFoundException
+from app.user.models import UserLoginResponse
 from app.user.repository import BaseUserRepository
+from app.depends.auth import get_token
 
+from cryptography.fernet import Fernet
+
+secret_key = Fernet.generate_key()
+cipher_suite = Fernet(secret_key)
 
 class BaseUserService(abc.ABC):
     def __init__(self, repository: BaseUserRepository) -> None:
         self.user_repository = repository
 
     @abc.abstractmethod
-    async def get_user(self, id: str, pw: str) -> Token:
+    async def get_user(self, id: str, pw: str) -> UserLoginResponse:
         raise NotImplementedError
 
 
 class UserService(BaseUserService):
-    async def get_user(self, id: str, pw: str) -> Tuple[Token, UserLoginResponse]:
+    async def get_user(self, id: str, pw: str) -> UserLoginResponse:
         user = await self.user_repository.findUser(id)
         if not user:
-            raise UserIdNotFoundError
+            raise NotFoundException
 
         if user.pw != pw:
-            raise NotAuthenticated
-
-        token = await self._get_token(id)
+            raise UnAuthorizedException
+        
+        cipher_token = await get_token(user.user_id)
 
         return (
-            token,
             UserLoginResponse(
-                id=user.id,
-                nickname=user.nickname,
-                time_created=user.time_created,
-            ),
+                token=cipher_token,
+                nickname=user.id,
+            )
         )
-
-    async def _get_token(self, id: str) -> Token:
-        return f"{id}-Simple-token-{datetime.now()}"
