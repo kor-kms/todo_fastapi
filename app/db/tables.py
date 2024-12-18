@@ -27,7 +27,7 @@ class User(Base):
 
 class Todo(Base):
     todo_id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(Integer, unique=True, nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, nullable=False)
     context: Mapped[str] = mapped_column(String, nullable=False)
     created_at: Mapped[datetime.datetime] = mapped_column(
         DateTime, default=func.now()
