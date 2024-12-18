@@ -9,7 +9,7 @@ from app.todo.service import BaseTodoService
 app_router = APIRouter()
 
 
-@app_router.get("/todoinfo", response_model=GetTodoInfoList)
+@app_router.get("/todo", response_model=GetTodoInfoList)
 async def getTodoInfoList(
     user_id: int = Depends(get_current_user), todo_svc: BaseTodoService = Depends(get_todo_service),
 ):
@@ -17,7 +17,7 @@ async def getTodoInfoList(
     return GetTodoInfoList(data=todoinfo)
 
 
-@app_router.post("/regtodo", response_model=InsertTodoInfo, status_code=201)
+@app_router.post("/todo", response_model=InsertTodoInfo, status_code=201)
 async def insertTodo(
     context: str, user_id: int = Depends(get_current_user), todo_svc: BaseTodoService = Depends(get_todo_service),
 ):
@@ -25,7 +25,7 @@ async def insertTodo(
     return GetTodoInfo(data=todoinfo)
 
 
-@app_router.post("/deltodo", response_model=DeleteTodoInfo)
+@app_router.delete("/todo", response_model=DeleteTodoInfo)
 async def deleteTodo(
     todo_id: int, user_id: int =  Depends(get_current_user), todo_svc: BaseTodoService = Depends(get_todo_service),
 ):
