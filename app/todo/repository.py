@@ -12,27 +12,24 @@ class BaseTodoRepository(abc.ABC):
         self.session = session
 
     @abc.abstractmethod
-    async def getTodoInfoList(self, user_id: int) -> list[TodoInfo]:
+    async def get_todo_info_list(self, user_id: int) -> list[TodoInfo]:
         raise NotImplementedError
-    
+
     @abc.abstractmethod
-    async def insertTodoInfo(self, user_id: int, context: str) -> TodoInfo:
+    async def insert_todo(self, user_id: int, context: str) -> TodoInfo:
         raise NotImplementedError
-    
+
     @abc.abstractmethod
-    async def deleteTodoInfo(self, user_id: int, todo_id: int) -> int:
+    async def delete_todo(self, user_id: int, todo_id: int) -> int:
         raise NotImplementedError
 
 
 class TodoRepository(BaseTodoRepository):
-    async def getTodoInfoList(self, user_id: int) -> list[TodoInfo]:
+    async def get_todo_info_list(self, user_id: int) -> list[TodoInfo]:
         results = (
             (
                 await self.session.execute(
-                    select(tb.Todo)
-                    .filter(
-                        tb.Todo.user_id == user_id
-                    )
+                    select(tb.Todo).filter(tb.Todo.user_id == user_id)
                 )
             )
             .unique()
@@ -40,23 +37,26 @@ class TodoRepository(BaseTodoRepository):
             .all()
         )
         return [TodoInfo.model_validate(row) for row in results]
-    
-    async def insertTodoInfo(self, user_id: int, context: str) -> TodoInfo:
+
+    async def insert_todo(self, user_id: int, context: str) -> TodoInfo:
         new_todo = tb.Todo(user_id=user_id, context=context)
         self.session.add(new_todo)
         await self.session.commit()
 
         return TodoInfo(
-            todo_id = new_todo.todo_id,
-            user_id = new_todo.user_id,
-            context = new_todo.context,
-            created_at = new_todo.created_at,
-            modified_at = new_todo.modified_at,
+            todo_id=new_todo.todo_id,
+            user_id=new_todo.user_id,
+            context=new_todo.context,
+            created_at=new_todo.created_at,
+            modified_at=new_todo.modified_at,
         )
 
-    async def deleteTodoInfo(self, user_id: int, todo_id: int) -> str:
-        result = await self.session.execute(delete(tb.Todo).where((tb.Todo.todo_id == todo_id) & (tb.Todo.user_id == user_id)))
+    async def delete_todo(self, user_id: int, todo_id: int) -> str:
+        result = await self.session.execute(
+            delete(tb.Todo).where(
+                (tb.Todo.todo_id == todo_id) & (tb.Todo.user_id == user_id)
+            )
+        )
         await self.session.commit()
 
         return result.rowcount
-

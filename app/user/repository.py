@@ -11,12 +11,12 @@ class BaseUserRepository(abc.ABC):
         self.session = session
 
     @abc.abstractmethod
-    async def findUser(self, id: str) -> str:
+    async def find_user(self, id: str) -> str:
         raise NotImplementedError
 
 
 class UserRepository(BaseUserRepository):
-    async def findUser(self, id: str) -> str:
+    async def find_user(self, id: str) -> str:
         result = (
             (await self.session.execute(select(tb.User).filter(tb.User.id == id)))
             .unique()
