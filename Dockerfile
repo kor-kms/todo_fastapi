@@ -1,13 +1,10 @@
 FROM python:3.11.3 as requirements-stage
-WORKDIR /workspace
+WORKDIR /code/workspace
 RUN pip install poetry
 
-COPY ./pyproject.toml ./poetry.lock* /workspace/
+COPY ./pyproject.toml ./poetry.lock* /code/workspace/
 RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
 
-FROM python:3.11.3
-WORKDIR /code
-COPY --from=requirements-stage /workspace/requirements.txt /code/requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /code/workspace/requirements.txt
 
-COPY ./app /code/app
+COPY . /code/workspace
