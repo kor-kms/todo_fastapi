@@ -14,7 +14,7 @@ from sqlalchemy.ext.asyncio import (
 class SessionManager:
     def __init__(self):
         self._engine = create_async_engine(
-            "postgresql+asyncpg://user:password@127.0.0.1:5432/todo",
+            "postgresql+asyncpg://user:password@db:5432/todo",
             pool_size=10,
             max_overflow=10,
             echo=True,
