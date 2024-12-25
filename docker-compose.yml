@@ -1,14 +1,16 @@
 version: "3"
 services:
   fastapi:
-    image: test
-    command: uvicorn --host 0.0.0.0 app.main:app
+    build: .
+    command: uvicorn --host 0.0.0.0 app.main:app --reload
     ports:
       - 8000:8000
     volumes:
       - .:/code/workspace
     networks:
       - todo_fastapi_default
+    depends_on:
+      - db
   db:
     container_name: db
     image: postgres:15.2-alpine
@@ -31,5 +33,3 @@ volumes:
 
 networks:
   todo_fastapi_default:
-    external:
-      name: todo_fastapi_default
