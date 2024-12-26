@@ -1,6 +1,6 @@
 import abc
 
-from app.errors.excpetion import NotFoundException
+from app.errors.excpetion import NotFoundException, ForbiddenException
 from app.todo.repository import BaseTodoRepository
 from app.todo.models import TodoInfo
 
@@ -32,8 +32,18 @@ class TodoService(BaseTodoService):
         return result
 
     async def delete_todo(self, user_id: int, todo_id: int) -> str:
-        result = await self.todo_repository.delete_todo(user_id, todo_id)
+        user_validation_check = await self.todo_repository.get_user_id_by_todo_info(
+            todo_id
+        )
+
+        if user_validation_check == None:
+            raise NotFoundException
+
+        elif user_validation_check.user_id != user_id:
+            raise ForbiddenException
+
+        result = await self.todo_repository.delete_todo(todo_id)
         if result == 1:
             return "delete success"
         else:
-            raise NotFoundException
+            raise NotImplementedError

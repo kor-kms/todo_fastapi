@@ -16,11 +16,15 @@ class BaseTodoRepository(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
+    async def get_user_id_by_todo_info(self, todo_id: int) -> TodoInfo:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     async def insert_todo(self, user_id: int, context: str) -> TodoInfo:
         raise NotImplementedError
 
     @abc.abstractmethod
-    async def delete_todo(self, user_id: int, todo_id: int) -> int:
+    async def delete_todo(self, todo_id: int) -> int:
         raise NotImplementedError
 
 
@@ -38,6 +42,18 @@ class TodoRepository(BaseTodoRepository):
         )
         return [TodoInfo.model_validate(row) for row in results]
 
+    async def get_user_id_by_todo_info(self, todo_id: int) -> TodoInfo:
+        result = (
+            (
+                await self.session.execute(
+                    select(tb.Todo).filter(tb.Todo.todo_id == todo_id)
+                )
+            )
+            .unique()
+            .scalar_one_or_none()
+        )
+        return result
+
     async def insert_todo(self, user_id: int, context: str) -> TodoInfo:
         new_todo = tb.Todo(user_id=user_id, context=context)
         self.session.add(new_todo)
@@ -51,11 +67,9 @@ class TodoRepository(BaseTodoRepository):
             modified_at=new_todo.modified_at,
         )
 
-    async def delete_todo(self, user_id: int, todo_id: int) -> str:
+    async def delete_todo(self, todo_id: int) -> str:
         result = await self.session.execute(
-            delete(tb.Todo).where(
-                (tb.Todo.todo_id == todo_id) & (tb.Todo.user_id == user_id)
-            )
+            delete(tb.Todo).where(tb.Todo.todo_id == todo_id)
         )
         await self.session.commit()
 
