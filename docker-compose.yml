@@ -1,12 +1,16 @@
 version: "3"
 services:
   fastapi:
-    image: test
-    command: uvicorn --host 0.0.0.0 app.main:app
+    build: .
+    command: uvicorn --host 0.0.0.0 app.main:app --reload
     ports:
       - 8000:8000
     volumes:
-      - ./app:/code/app
+      - .:/code/workspace
+    networks:
+      - todo_fastapi_default
+    depends_on:
+      - db
   db:
     container_name: db
     image: postgres:15.2-alpine
@@ -21,6 +25,11 @@ services:
       POSTGRES_INITDB_ARGS: --encoding=UTF-8
     volumes:
       - db-volume:/var/lib/postgresql/data
+    networks:
+      - todo_fastapi_default
 
 volumes:
   db-volume:
+
+networks:
+  todo_fastapi_default:
